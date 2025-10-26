@@ -11,9 +11,10 @@ config();
 const privateKey = process.env.PRIVATE_KEY as Hex | string;
 const baseURL = process.env.RESOURCE_SERVER_URL as string; // e.g. https://example.com
 const endpointPath = process.env.ENDPOINT_PATH as string; // e.g. /weather
+const timeZone = (process.env.TIME_ZONE ?? process.env.TIMEZONE) as string | undefined;
 const url = `${baseURL}${endpointPath}`; // e.g. https://example.com/weather
 
-if (!baseURL || !privateKey || !endpointPath) {
+if (!baseURL || !privateKey || !endpointPath || !timeZone) {
   console.error("Missing required environment variables");
   process.exit(1);
 }
@@ -29,44 +30,20 @@ if (!baseURL || !privateKey || !endpointPath) {
 async function main(): Promise<void> {
   // const signer = await createSigner("solana-devnet", privateKey); // uncomment for Solana
   const signer = await createSigner("base", privateKey);
-  const maxPaymentBaseUnitsEnv = process.env.MAX_PAYMENT_BASE_UNITS;
-  const fetchWithPayment = maxPaymentBaseUnitsEnv
-    ? wrapFetchWithPayment(fetch, signer, BigInt(maxPaymentBaseUnitsEnv))
-    : wrapFetchWithPayment(fetch, signer);
-
-  const timeZone = process.env.TIME_ZONE ?? "America/Denver";
-  const rawBody =
-    process.env.REQUEST_BODY ??
-    JSON.stringify({
-      input: {
-        timeZone,
-      },
-    });
+  const fetchWithPayment = wrapFetchWithPayment(fetch, signer);
 
   const response = await fetchWithPayment(url, {
     method: "POST",
-    headers: {
-      accept: "application/json",
-      "content-type": "application/json",
-    },
-    body: rawBody,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ input: { timeZone } }),
   });
-
-  console.log(`status: ${response.status}`);
-
-  const contentType = response.headers.get("content-type") ?? "";
-  const body = contentType.includes("application/json")
-    ? await response.json()
-    : await response.text();
+  const body = await response.json();
   console.log(body);
 
-  const paymentHeader = response.headers.get("x-payment-response");
-  if (paymentHeader) {
-    const paymentResponse = decodeXPaymentResponse(paymentHeader);
-    console.log(paymentResponse);
-  } else {
-    console.warn("No x-payment-response header present on response.");
-  }
+  const paymentResponse = decodeXPaymentResponse(
+    response.headers.get("x-payment-response")!
+  );
+  console.log(paymentResponse);
 }
 
 main().catch((error) => {
