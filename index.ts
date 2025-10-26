@@ -14,7 +14,7 @@ const meta = {
   name: "timezone-agent",
   version: "0.2.0",
   description:
-    "Returns the current date and time for a supplied IANA timezone using timeapi.io.",
+    "Returns the current date and time for a supplied IANA timezone.",
 };
 
 const defaultPrice = "$0.01";
@@ -177,7 +177,7 @@ async function requestTimeApiJson<T>(
       ? truncateBodyPreview(bodyText)
       : "<empty response body>";
     throw new Error(
-      `[${label}] timeapi.io responded with ${response.status}: ${preview}`,
+      `[${label}] responded with ${response.status}: ${preview}`,
     );
   }
 
@@ -354,7 +354,7 @@ const currentTimeInput = z.object({
 registerEntrypoint({
   key: "current-time",
   description:
-    "Fetches the current date and time for the requested timezone via timeapi.io.",
+    "Fetches the current date and time for the requested timezone.",
   input: currentTimeInput,
   async handler(ctx) {
     const { timeZone } = ctx.input;
@@ -375,7 +375,7 @@ registerEntrypoint({
 registerEntrypoint({
   key: "current-time-by-coordinate",
   description:
-    "Fetches the current date and time for the supplied geographic coordinates via timeapi.io.",
+    "Fetches the current date and time for the supplied geographic coordinates.",
   input: coordinateSchema,
   async handler(ctx) {
     const { latitude, longitude } = ctx.input;
@@ -398,7 +398,7 @@ registerEntrypoint({
 registerEntrypoint({
   key: "current-time-by-ip",
   description:
-    "Fetches the current date and time by looking up the supplied IPv4 address via timeapi.io.",
+    "Fetches the current date and time by looking up the supplied IPv4 address.",
   input: z.object({ ipAddress: ipAddressSchema }),
   async handler(ctx) {
     const { ipAddress } = ctx.input;
@@ -417,7 +417,7 @@ registerEntrypoint({
 
 registerEntrypoint({
   key: "available-timezones",
-  description: "Lists all available IANA timezones from timeapi.io.",
+  description: "Lists all available IANA timezones.",
   input: noInputSchema,
   async handler() {
     const url = buildTimeApiUrl("/api/timezone/availabletimezones");
@@ -443,7 +443,7 @@ const timeZoneInfoInput = z.object({
 registerEntrypoint({
   key: "timezone-info",
   description:
-    "Gets detailed timezone information for the supplied IANA timezone name via timeapi.io.",
+    "Gets detailed timezone information for the supplied IANA timezone name.",
   input: timeZoneInfoInput,
   async handler(ctx) {
     const { timeZone } = ctx.input;
@@ -466,7 +466,7 @@ registerEntrypoint({
 registerEntrypoint({
   key: "timezone-info-by-coordinate",
   description:
-    "Gets timezone information for the supplied geographic coordinates via timeapi.io.",
+    "Gets timezone information for the supplied geographic coordinates.",
   input: coordinateSchema,
   async handler(ctx) {
     const { latitude, longitude } = ctx.input;
@@ -492,7 +492,7 @@ registerEntrypoint({
 registerEntrypoint({
   key: "timezone-info-by-ip",
   description:
-    "Gets timezone information by looking up the supplied IPv4 address via timeapi.io.",
+    "Gets timezone information by looking up the supplied IPv4 address.",
   input: z.object({ ipAddress: ipAddressSchema }),
   async handler(ctx) {
     const { ipAddress } = ctx.input;
@@ -526,7 +526,7 @@ const convertTimeZoneInput = z.object({
 registerEntrypoint({
   key: "convert-timezone",
   description:
-    "Converts a date/time from one timezone to another using timeapi.io.",
+    "Converts a date/time from one timezone to another.",
   input: convertTimeZoneInput,
   async handler(ctx) {
     const { fromTimeZone, dateTime, toTimeZone, dstAmbiguity } = ctx.input;
@@ -568,7 +568,7 @@ const translationInput = z.object({
 registerEntrypoint({
   key: "translate-datetime",
   description:
-    "Translates a date/time into a friendly localized string using timeapi.io.",
+    "Translates a date/time into a friendly localized string using.",
   input: translationInput,
   async handler(ctx) {
     const { dateTime, languageCode } = ctx.input;
@@ -598,7 +598,7 @@ const dayOfWeekInput = z.object({
 
 registerEntrypoint({
   key: "day-of-week",
-  description: "Resolves the supplied date to the day of the week via timeapi.io.",
+  description: "Resolves the supplied date to the day of the week.",
   input: dayOfWeekInput,
   async handler(ctx) {
     const { date } = ctx.input;
@@ -627,7 +627,7 @@ const dayOfYearInput = z.object({
 registerEntrypoint({
   key: "day-of-year",
   description:
-    "Calculates the ordinal day of the year for the supplied date via timeapi.io.",
+    "Calculates the ordinal day of the year for the supplied date.",
   input: dayOfYearInput,
   async handler(ctx) {
     const { date } = ctx.input;
@@ -680,7 +680,7 @@ const currentCalculationInput = z.object({
 registerEntrypoint({
   key: "increment-current-time",
   description:
-    "Increments the current time in a timezone by a timespan via timeapi.io.",
+    "Increments the current time in a timezone by a timespan.",
   input: currentCalculationInput,
   async handler(ctx) {
     const { timeZone, timeSpan } = ctx.input;
@@ -707,7 +707,7 @@ registerEntrypoint({
 registerEntrypoint({
   key: "decrement-current-time",
   description:
-    "Decrements the current time in a timezone by a timespan via timeapi.io.",
+    "Decrements the current time in a timezone by a timespan.",
   input: currentCalculationInput,
   async handler(ctx) {
     const { timeZone, timeSpan } = ctx.input;
@@ -741,7 +741,7 @@ const customCalculationInput = z.object({
 registerEntrypoint({
   key: "increment-custom-time",
   description:
-    "Increments a custom date/time in a timezone by a timespan via timeapi.io.",
+    "Increments a custom date/time in a timezone by a timespan.",
   input: customCalculationInput,
   async handler(ctx) {
     const { timeZone, dateTime, timeSpan, dstAmbiguity } = ctx.input;
@@ -775,7 +775,7 @@ registerEntrypoint({
 registerEntrypoint({
   key: "decrement-custom-time",
   description:
-    "Decrements a custom date/time in a timezone by a timespan via timeapi.io.",
+    "Decrements a custom date/time in a timezone by a timespan.",
   input: customCalculationInput,
   async handler(ctx) {
     const { timeZone, dateTime, timeSpan, dstAmbiguity } = ctx.input;
@@ -808,7 +808,7 @@ registerEntrypoint({
 
 registerEntrypoint({
   key: "health-check",
-  description: "Runs the timeapi.io health check endpoint.",
+  description: "Runs the health check endpoint.",
   input: noInputSchema,
   async handler() {
     const url = buildTimeApiUrl("/api/health/check");
@@ -823,7 +823,7 @@ registerEntrypoint({
         ? truncateBodyPreview(bodyText)
         : "<empty response body>";
       throw new Error(
-        `[health-check] timeapi.io responded with ${response.status}: ${preview}`,
+        `[health-check] responded with ${response.status}: ${preview}`,
       );
     }
 
