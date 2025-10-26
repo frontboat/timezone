@@ -30,15 +30,9 @@ async function main(): Promise<void> {
   // const signer = await createSigner("solana-devnet", privateKey); // uncomment for Solana
   const signer = await createSigner("base", privateKey);
   const maxPaymentBaseUnitsEnv = process.env.MAX_PAYMENT_BASE_UNITS;
-  const maxPaymentBaseUnits = maxPaymentBaseUnitsEnv
-    ? BigInt(maxPaymentBaseUnitsEnv)
-    : BigInt(10_000_000); // 10 USDC default allowance
-
-  const fetchWithPayment = wrapFetchWithPayment(
-    fetch,
-    signer,
-    maxPaymentBaseUnits
-  );
+  const fetchWithPayment = maxPaymentBaseUnitsEnv
+    ? wrapFetchWithPayment(fetch, signer, BigInt(maxPaymentBaseUnitsEnv))
+    : wrapFetchWithPayment(fetch, signer);
 
   const timeZone = process.env.TIME_ZONE ?? "America/Denver";
   const rawBody =
